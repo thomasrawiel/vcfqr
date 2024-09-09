@@ -1,0 +1,8 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:vcf="http://typo3.org/ns/TRAW/Vcfqr/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+<f:section name="Main">
+    <vcf:link.QRCode parameter="{data.header_link}" fileName="{data.tx_vcfqr_filename}"/>
+</f:section>
+</html>

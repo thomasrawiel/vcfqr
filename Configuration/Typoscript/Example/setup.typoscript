@@ -1,0 +1,17 @@
+tt_content.vcfqr_link =< lib.contentElement
+tt_content.vcfqr_link {
+    templateName = QrLink
+    templateRootPaths.0 = EXT:vcfqr/Resources/Private/Templates/
+}
+
+tt_content.vcfqr_vcf =< lib.contentElement
+tt_content.vcfqr_vcf {
+    templateName = Vcf
+    templateRootPaths.0 = EXT:vcfqr/Resources/Private/Templates/
+}
+
+tt_content.vcfqr_vcf_qr =< lib.contentElement
+tt_content.vcfqr_vcf_qr {
+    templateName = VcfQr
+    templateRootPaths.0 = EXT:vcfqr/Resources/Private/Templates/
+}

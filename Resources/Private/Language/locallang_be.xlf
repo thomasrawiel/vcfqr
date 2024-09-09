@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:vcfqr/Resources/Private/Language/locallang_be.xlf" date="2024-09-06T10:00:00Z" product-name="vcfqr">
+        <header/>
+        <body>
+            <trans-unit id="CTypeGroup" resname="CTypeGroup">
+                <source>VCF-QR-Code</source>
+            </trans-unit>
+            <trans-unit id="CType_link" resname="CType_link">
+                <source>QR-Code-Link</source>
+            </trans-unit>
+            <trans-unit id="CType_link.description" resname="CType_link.description">
+                <source>Add QR-Code for URL</source>
+            </trans-unit>
+            <trans-unit id="CType_vcf" resname="CType_vcf">
+                <source>Link to VCF download</source>
+            </trans-unit>
+            <trans-unit id="CType_vcf.description" resname="CType_vcf.description">
+                <source>Add a link to download the vcf file</source>
+            </trans-unit>
+            <trans-unit id="CType_vcf_qr" resname="CType_vcf_qr">
+                <source>QR-Code VCF download</source>
+            </trans-unit>
+            <trans-unit id="CType_vcf_qr.description" resname="CType_vcf_qr.description">
+                <source>Creates a QR code that downloads the vcf file</source>
+            </trans-unit>
+            <trans-unit id="tt_address.hideqrcode" resname="tt_address.hideqrcode">
+                <source>Display QR Code</source>
+            </trans-unit>
+            <trans-unit id="tx_vcfqr_filename" resname="tx_vcfqr_filename">
+                <source>QR code filename</source>
+            </trans-unit>
+            <trans-unit id="tx_vcfqr_filename.description" resname="tx_vcfqr_filename.description">
+                <source>The prefixed path can be changed in the extension settings</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

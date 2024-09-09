@@ -1,0 +1,11 @@
+# cat=basic; type=boolean; label=Enable example content elements
+enableExamples = 0
+
+#cat=basic; type=int+; label=File storage uid (0 to use default storage)
+storageUid = 0
+
+#cat=basic; type=string; label=Foldername for QR-Code cache
+qrfolder = qr-codes
+
+#cat=basic; type=int+; label=QR code cache lifetime in seconds
+qrcodeCacheLifetime = 86400
