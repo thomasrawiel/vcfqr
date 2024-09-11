@@ -4,9 +4,9 @@
 <f:layout name="Default"/>
 <f:section name="Main">
     <div style="width:300px;height:300px;">
-    <f:format.raw>
-        <vcf:link.QRCode parameter="{data.header_link}" fileName="{data.tx_vcfqr_filename}"/>
-    </f:format.raw>
+        <f:format.raw>
+            <vcf:link.QRCode parameter="{data.header_link}" fileName="{data.tx_vcfqr_filename}" returnValue="content"/>
+        </f:format.raw>
     </div>
     <f:comment>
         <!-- get the image in an image tag -->
