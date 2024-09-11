@@ -1,8 +1,9 @@
 <?php
 
-namespace TRAW\Vcfqr\ViewHelpers\Link;
+namespace TRAW\Vcfqr\ViewHelpers\Address;
 
 use TRAW\Vcfqr\Service\QRCodeService;
+use TRAW\Vcfqr\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -17,9 +18,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
  */
 class QRCodeViewHelper extends AbstractTagBasedViewHelper
 {
-    /**
-     * @var QRCodeService
-     */
     protected QrCodeService $qrCodeService;
 
     /**
@@ -28,34 +26,25 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
     protected $tagName = 'img';
 
 
-    /**
-     * @param QRCodeService $qrCodeService
-     */
     public function __construct(QRCodeService $qrCodeService)
     {
         parent::__construct();
         $this->qrCodeService = $qrCodeService;
     }
 
-    /**
-     * @return void
-     */
     public function initializeArguments()
     {
         parent::initializeArguments();
-        $this->registerArgument('parameter', 'string', 'stdWrap.typolink style parameter string', true);
-        $this->registerArgument('fileName', 'string', '', true);
-        $this->registerArgument('additionalParams', 'string', 'stdWrap.typolink additionalParams', false, '');
+        $this->registerArgument('address', 'int', 'address uid', true);
+        $this->registerArgument('fileName', 'string', 'filename of the qrcode image');
     }
 
-    /**
-     * @return string
-     */
     public function render()
     {
-        $arguments = $this->arguments;
 
-        $parameter = $arguments['parameter'] ?? '';
+        $parameter = $this->renderingContext->getRequest()->getAttribute('routing')->getPageId();
+        $arguments = $this->arguments;
+        $arguments['address_src'] = $parameter;
 
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
@@ -67,7 +56,9 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
             $content = self::invokeContentObjectRenderer($arguments, $typoLinkParameter);
         }
 
-        $qrCode = $this->qrCodeService->getQRCode($content, $arguments['fileName'], $fileType = 'svg');
+        $qrCode = $this->qrCodeService->getQRCode($content, !empty($arguments['fileName'])?$arguments['fileName']:($arguments['address_src'] . '_' . $arguments['address_src']), $fileType = 'svg');
+        new Tag
+
         $this->tag->addAttribute('src', $qrCode->getPublicUrl());
         $this->tag->addAttribute('width', 500);
         $this->tag->addAttribute('height', 500);
@@ -76,18 +67,13 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
         return $this->tag->render();
     }
 
-    /**
-     * @param array  $arguments
-     * @param string $typoLinkParameter
-     *
-     * @return string
-     */
     protected static function invokeContentObjectRenderer(array $arguments, string $typoLinkParameter): string
     {
         $instructions = [
             'parameter' => $typoLinkParameter,
-            'forceAbsoluteUrl' => 1,
+            'forceAbsoluteUrl' => true,
         ];
+
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
         return $contentObject->createUrl($instructions);
     }
@@ -108,6 +94,13 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
             $typoLinkConfiguration['additionalParams'] .= $additionalParameters;
         }
 
+        $typoLinkConfiguration['additionalParams'] = self::mergeWithMiddlewareParams($typoLinkConfiguration['additionalParams'], $arguments);
+
         return $typoLinkConfiguration;
+    }
+
+    protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
+    {
+        return $additionalParams . ConfigurationUtility::getDownloadParameters($arguments['address'], $arguments['address_src']);
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace TRAW\Vcfqr\ViewHelpers\Link;
+namespace TRAW\Vcfqr\ViewHelpers\Address;
 
+use TRAW\Vcfqr\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
@@ -21,16 +22,10 @@ class VcfViewHelper extends AbstractViewHelper
     public function initializeArguments(): void
     {
         $this->registerArgument('address', 'int', 'address uid', true);
-        $this->registerArgument('target', 'string', 'Define where to display the linked URL', false, '');
+        $this->registerArgument('target', 'string', 'Define where to display the linked URL', false, '_blank');
         $this->registerArgument('class', 'string', 'Define classes for the link element', false, '');
         $this->registerArgument('title', 'string', 'Define the title for the link element', false, '');
-        $this->registerArgument('language', 'string', 'link to a specific language - defaults to the current language, use a language ID or "current" to enforce a specific language', false);
-        $this->registerArgument('additionalParams', 'string', 'Additional query parameters to be attached to the resulting URL', false, '');
         $this->registerArgument('additionalAttributes', 'array', 'Additional tag attributes to be added directly to the resulting HTML tag', false, []);
-        $this->registerArgument('addQueryString', 'string', 'If set, the current query parameters will be kept in the URL. If set to "untrusted", then ALL query parameters will be added. Be aware, that this might lead to problems when the generated link is cached.', false, false);
-        $this->registerArgument('addQueryStringExclude', 'string', 'Define parameters to be excluded from the query string (only active if addQueryString is set)', false, '');
-        $this->registerArgument('absolute', 'bool', 'Ensure the resulting URL is an absolute URL', false, false);
-        $this->registerArgument('parts-as', 'string', 'Variable name containing typoLink parts (if any)', false, 'typoLinkParts');
         $this->registerArgument('textWrap', 'string', 'Wrap the link using the typoscript "wrap" data type', false, '');
     }
 
@@ -42,7 +37,6 @@ class VcfViewHelper extends AbstractViewHelper
     {
         //link to current site
         $parameter = $renderingContext->getRequest()->getAttribute('routing')->getPageId();
-        $partsAs = $arguments['parts-as'] ?? 'typoLinkParts';
 
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
@@ -52,13 +46,7 @@ class VcfViewHelper extends AbstractViewHelper
         $mergedTypoLinkConfiguration = self::mergeTypoLinkConfiguration($typoLinkConfiguration, $arguments);
         $typoLinkParameter = $typoLinkCodec->encode($mergedTypoLinkConfiguration);
 
-        // expose internal typoLink configuration to Fluid child context
-        $variableProvider = $renderingContext->getVariableProvider();
-        $variableProvider->add($partsAs, $typoLinkConfiguration);
-        // If no link has to be rendered, the inner content will be returned as such
         $content = (string)$renderChildrenClosure();
-        // clean up exposed variables
-        $variableProvider->remove($partsAs);
 
         if ($parameter) {
             $content = self::invokeContentObjectRenderer($arguments, $typoLinkParameter, $content);
@@ -68,25 +56,14 @@ class VcfViewHelper extends AbstractViewHelper
 
     protected static function invokeContentObjectRenderer(array $arguments, string $typoLinkParameter, string $content): string
     {
-        $addQueryString = $arguments['addQueryString'] ?? false;
-        $addQueryStringExclude = $arguments['addQueryStringExclude'] ?? '';
-        $absolute = $arguments['absolute'] ?? false;
         $aTagParams = self::serializeTagParameters($arguments);
 
         $instructions = [
             'parameter' => $typoLinkParameter,
             'ATagParams' => $aTagParams,
-            'forceAbsoluteUrl' => $absolute,
+            'forceAbsoluteUrl' => 1,
         ];
-        if (isset($arguments['language']) && $arguments['language'] !== null) {
-            $instructions['language'] = (string)$arguments['language'];
-        }
-        if ($addQueryString && $addQueryString !== 'false') {
-            $instructions['addQueryString'] = $addQueryString;
-            $instructions['addQueryString.'] = [
-                'exclude' => $addQueryStringExclude,
-            ];
-        }
+
         if ((string)($arguments['textWrap'] ?? '') !== '') {
             $instructions['ATagBeforeWrap'] = true;
             $instructions['wrap'] = $arguments['textWrap'];
@@ -146,8 +123,6 @@ class VcfViewHelper extends AbstractViewHelper
 
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
-        return $additionalParams
-            . '&tx_vcfqr_address[uid]=' . $arguments['address']
-            . '&tx_vcfqr_address[src]=' . $arguments['address_src'];
+        return $additionalParams . ConfigurationUtility::getDownloadParameters($arguments['address'], $arguments['address_src']);
     }
 }

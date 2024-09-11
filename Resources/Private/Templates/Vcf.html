@@ -3,6 +3,11 @@
       data-namespace-typo3-fluid="true">
 <f:layout name="Default" />
 <f:section name="Main">
-    <vcf:link.vcf address="{data.tx_vcfqr_address}">Download vCard</vcf:link.vcf>
+    <vcf:address.vcf address="{data.tx_vcfqr_address}"
+                     class="vcf-download"
+                     additionalAttributes="{aria-role:'button'}"
+                     title="Download vCard"
+                     textWrap="<span>|</span>"
+    >Download vCard</vcf:address.vcf>
 </f:section>
 </html>

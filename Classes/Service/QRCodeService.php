@@ -107,7 +107,7 @@ class QRCodeService
         return $this->configurationUtility->getStorage()->addFile(
             $tmpFile,
             $this->configurationUtility->getFolder(),
-            $filename . '.svg',
+            $filename,
             DuplicationBehavior::REPLACE
         );
     }

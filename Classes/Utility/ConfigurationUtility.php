@@ -72,7 +72,20 @@ class ConfigurationUtility
         return $this->folder;
     }
 
+    /**
+     * @return int
+     */
     public function getQRCodeCacheLifetime(): int {
         return $this->configuration['qrcodeCacheLifetime'] ?? 0;
+    }
+
+    /**
+     * @param int $addressUid
+     * @param int $pageUid
+     *
+     * @return string
+     */
+    public static function getDownloadParameters(int $addressUid, int $pageUid):string {
+        return sprintf('&tx_vcfqr_address[uid]=%d&tx_vcfqr_address[src]=%d', $addressUid, $pageUid);
     }
 }
