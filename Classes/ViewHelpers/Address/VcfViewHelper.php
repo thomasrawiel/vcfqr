@@ -10,6 +10,13 @@ use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
+/**
+ * Class VcfViewHelper
+ *
+ * creates the download link for the vcf file of the specified address record
+ *
+ * @package TRAW\Vcfqr\ViewHelpers\Address
+ */
 class VcfViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
@@ -19,6 +26,9 @@ class VcfViewHelper extends AbstractViewHelper
      */
     protected $escapeOutput = false;
 
+    /**
+     * @return void
+     */
     public function initializeArguments(): void
     {
         $this->registerArgument('address', 'int', 'address uid', true);
@@ -54,6 +64,13 @@ class VcfViewHelper extends AbstractViewHelper
         return $content;
     }
 
+    /**
+     * @param array  $arguments
+     * @param string $typoLinkParameter
+     * @param string $content
+     *
+     * @return string
+     */
     protected static function invokeContentObjectRenderer(array $arguments, string $typoLinkParameter, string $content): string
     {
         $aTagParams = self::serializeTagParameters($arguments);
@@ -73,6 +90,11 @@ class VcfViewHelper extends AbstractViewHelper
         return $contentObject->typoLink($content, $instructions);
     }
 
+    /**
+     * @param array $arguments
+     *
+     * @return string
+     */
     protected static function serializeTagParameters(array $arguments): string
     {
         // array(param1 -> value1, param2 -> value2) --> param1="value1" param2="value2" for typolink.ATagParams
@@ -121,6 +143,12 @@ class VcfViewHelper extends AbstractViewHelper
         return $typoLinkConfiguration;
     }
 
+    /**
+     * @param $additionalParams
+     * @param $arguments
+     *
+     * @return string
+     */
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
         return $additionalParams . ConfigurationUtility::getDownloadParameters($arguments['address'], $arguments['address_src']);

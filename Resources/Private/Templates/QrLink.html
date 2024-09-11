@@ -3,6 +3,14 @@
       data-namespace-typo3-fluid="true">
 <f:layout name="Default"/>
 <f:section name="Main">
-    <vcf:link.QRCode parameter="{data.header_link}" fileName="{data.tx_vcfqr_filename}"/>
+    <div style="width:300px;height:300px;">
+    <f:format.raw>
+        <vcf:link.QRCode parameter="{data.header_link}" fileName="{data.tx_vcfqr_filename}"/>
+    </f:format.raw>
+    </div>
+    <f:comment>
+        <!-- get the image in an image tag -->
+        <f:image src="{vcf:link.qRCode(fileName: data.tx_vcfqr_filename, parameter: data.header_link, returnValue: 'url')}" width="300" height="300" />
+    </f:comment>
 </f:section>
 </html>

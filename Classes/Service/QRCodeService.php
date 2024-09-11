@@ -3,7 +3,6 @@
 namespace TRAW\Vcfqr\Service;
 
 use chillerlan\QRCode\Common\Version;
-use chillerlan\QRCode\Data\QRMatrix;
 use chillerlan\QRCode\Output\QRMarkupSVG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
@@ -73,31 +72,13 @@ class QRCodeService
             'version' => Version::AUTO,
             'outputBase64' => false,
             'connectPaths' => true,
-            'keepAsSquare' => [
-                QRMatrix::M_FINDER_DARK,
-                QRMatrix::M_FINDER_DOT,
-                QRMatrix::M_ALIGNMENT_DARK,
-            ],
+//            'keepAsSquare' => [
+//                QRMatrix::M_FINDER_DARK,
+//                QRMatrix::M_FINDER_DOT,
+//                QRMatrix::M_ALIGNMENT_DARK,
+//            ],
         ];
-// if set to false, the light modules won't be rendered
-        // $options->drawLightModules = true;
-        // $options->svgUseFillAttributes = true;
-// draw the modules as circles isntead of squares
-        //   $options->drawCircularModules = true;
-        //   $options->circleRadius = 0.4;
-//        $options->svgDefs = '
-//	<linearGradient id="rainbow" x1="1" y2="1">
-//		<stop stop-color="#e2453c" offset="0"/>
-//		<stop stop-color="#e07e39" offset="0.2"/>
-//		<stop stop-color="#e5d667" offset="0.4"/>
-//		<stop stop-color="#51b95b" offset="0.6"/>
-//		<stop stop-color="#1e72b7" offset="0.8"/>
-//		<stop stop-color="#6f5ba7" offset="1"/>
-//	</linearGradient>
-//	<style><![CDATA[
-//		.dark{fill: url(#rainbow);}
-//		.light{fill: #eee;}
-//	]]></style>';
+
 
         $out = (new QRCode(new QROptions($options)))->render($data);
         $tmpFile = '/tmp/' . $filename;

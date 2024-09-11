@@ -6,7 +6,7 @@ use TRAW\Vcfqr\Service\QRCodeService;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Class QRCodeViewHelper
@@ -15,17 +15,12 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
  *
  * @package TRAW\Vcfqr\ViewHelpers\Link
  */
-class QRCodeViewHelper extends AbstractTagBasedViewHelper
+class QRCodeViewHelper extends AbstractViewHelper
 {
     /**
      * @var QRCodeService
      */
     protected QrCodeService $qrCodeService;
-
-    /**
-     * @var string
-     */
-    protected $tagName = 'img';
 
 
     /**
@@ -33,7 +28,6 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
      */
     public function __construct(QRCodeService $qrCodeService)
     {
-        parent::__construct();
         $this->qrCodeService = $qrCodeService;
     }
 
@@ -46,6 +40,7 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
         $this->registerArgument('parameter', 'string', 'stdWrap.typolink style parameter string', true);
         $this->registerArgument('fileName', 'string', '', true);
         $this->registerArgument('additionalParams', 'string', 'stdWrap.typolink additionalParams', false, '');
+        $this->registerArgument('returnValue', 'string', 'returns either the public url of the image or the image content', false, 'content');
     }
 
     /**
@@ -68,12 +63,7 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
         }
 
         $qrCode = $this->qrCodeService->getQRCode($content, $arguments['fileName'], $fileType = 'svg');
-        $this->tag->addAttribute('src', $qrCode->getPublicUrl());
-        $this->tag->addAttribute('width', 500);
-        $this->tag->addAttribute('height', 500);
-        $this->tag->addAttribute('alt', '');
-
-        return $this->tag->render();
+        return $arguments['returnValue'] === 'url' ? $qrCode->getPublicUrl() : $qrCode->getContents();
     }
 
     /**

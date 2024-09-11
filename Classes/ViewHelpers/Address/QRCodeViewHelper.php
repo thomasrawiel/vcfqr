@@ -8,27 +8,21 @@ use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
  * Class QRCodeViewHelper
  *
- * Based on uri.typolink, takes the created url and generates a qr code
+ * Based on uri.typolink, creates the download link to the vcf file and generates a qr code
  *
- * @package TRAW\Vcfqr\ViewHelpers\Link
+ * @package TRAW\Vcfqr\ViewHelpers\Address
  */
-class QRCodeViewHelper extends AbstractTagBasedViewHelper
+class QRCodeViewHelper extends AbstractViewHelper
 {
     protected QrCodeService $qrCodeService;
 
-    /**
-     * @var string
-     */
-    protected $tagName = 'img';
-
-
     public function __construct(QRCodeService $qrCodeService)
     {
-        parent::__construct();
         $this->qrCodeService = $qrCodeService;
     }
 
@@ -37,6 +31,7 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
         parent::initializeArguments();
         $this->registerArgument('address', 'int', 'address uid', true);
         $this->registerArgument('fileName', 'string', 'filename of the qrcode image');
+        $this->registerArgument('returnValue', 'string', 'returns either the public url of the image or the image content', false, 'content');
     }
 
     public function render()
@@ -57,14 +52,8 @@ class QRCodeViewHelper extends AbstractTagBasedViewHelper
         }
 
         $qrCode = $this->qrCodeService->getQRCode($content, !empty($arguments['fileName'])?$arguments['fileName']:($arguments['address_src'] . '_' . $arguments['address_src']), $fileType = 'svg');
-        new Tag
 
-        $this->tag->addAttribute('src', $qrCode->getPublicUrl());
-        $this->tag->addAttribute('width', 500);
-        $this->tag->addAttribute('height', 500);
-        $this->tag->addAttribute('alt', '');
-
-        return $this->tag->render();
+        return $arguments['returnValue'] === 'url' ? $qrCode->getPublicUrl() : $qrCode->getContents();
     }
 
     protected static function invokeContentObjectRenderer(array $arguments, string $typoLinkParameter): string
