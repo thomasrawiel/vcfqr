@@ -86,7 +86,7 @@ class VcfDownload implements MiddlewareInterface
      */
     protected function fetchVcard(int $addressUid): array
     {
-        $version = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr', 'vCardVersion');
+        $version = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr', 'vcardVersion');
         $table = 'tt_address';
 
         $vcfService = GeneralUtility::makeInstance(VcardService::class);
