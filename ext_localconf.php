@@ -9,8 +9,5 @@ call_user_func(function ($_EXTKEY = 'vcfqr') {
             "@import 'EXT:vcfqr/Configuration/TSConfig/example.mod.wizards.tsconfig"
         );
     }
-
-    $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = 'tx_vcfqr_address[uid]';
-    $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = 'tx_vcfqr_address[src]';
 });
 
