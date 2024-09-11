@@ -7,11 +7,15 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TRAW\Vcfqr\Service\VCardService;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
+/**
+ * Class VcfDownload
+ * @package TRAW\Vcfqr\Middleware
+ */
 class VcfDownload implements MiddlewareInterface
 {
     /**
@@ -23,11 +27,14 @@ class VcfDownload implements MiddlewareInterface
      */
     protected array $queryParams = [];
 
+    /**
+     * @param ServerRequestInterface  $request
+     * @param RequestHandlerInterface $handler
+     *
+     * @return ResponseInterface
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
-
-
         if (false === isset($request->getQueryParams()['tx_vcfqr_address']['uid'])
             || false === isset($request->getQueryParams()['tx_vcfqr_address']['src'])
             || false === MathUtility::canBeInterpretedAsInteger($request->getQueryParams()['tx_vcfqr_address']['uid'])
@@ -46,14 +53,21 @@ class VcfDownload implements MiddlewareInterface
             return $handler->handle($request);
         }
 
-        $fileName = 'event.ics';
-        header('Content-type: text/calendar; charset=utf-8');
+        $fileName = $vcf['filename'] . '.vcf';
+        header('Content-type: text/vcard; charset=utf-8');
         header('Content-Disposition: inline; filename=' . $fileName);
 
-        print $ics;
+        print $vcf['vcard'];
         exit;
     }
 
+    /**
+     * @param int $addressUid
+     * @param int $pageUid
+     *
+     * @return bool
+     * @throws \Doctrine\DBAL\Exception
+     */
     protected function validateUidsExist(int $addressUid, int $pageUid): bool
     {
         $cp = GeneralUtility::makeInstance(ConnectionPool::class);
@@ -64,75 +78,20 @@ class VcfDownload implements MiddlewareInterface
     }
 
 
-    protected function fetchVcard(int $addressUid): ?array
+    /**
+     * @param int $addressUid
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function fetchVcard(int $addressUid): array
     {
+        $version = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr', 'vCardVersion');
+        $table = 'tt_address';
+
         $vcfService = GeneralUtility::makeInstance(VcardService::class);
-        $vCard = $vcfService->generateVCardFromRecord($addressUid);
+        $vCard = $vcfService->generateVCardFromRecord($addressUid, $version, $table);
 
-        return $vcard;
-
-//        $qb = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('pages');
-//        $event = $qb->select('uid', 'title', 'subtitle', 'event_datetime', 'event_archive')
-//            ->from('pages')
-//            ->where(
-//                $qb->expr()->eq('uid', $qb->createNamedParameter($pageUid, \PDO::PARAM_INT))
-//            )
-//            ->execute()
-//            ->fetchAssociative();
-//
-//
-//        if ($event === false || (int)$event['event_datetime'] === 0 || (int)$event['event_archive'] === 0) {
-//            return null;
-//        }
-//
-//        $begin = new \DateTime();
-//        $begin->setTimestamp($event['event_datetime']);
-//
-//
-//        $end = new \DateTime();
-//        //plus 1 day since the "DTEND" property specifies the non-inclusive end of the event.
-//        $end->setTimestamp((int)$event['event_archive'] + 86400);
-//
-//
-//        $eventBegin = $begin->format('Ymd');
-//        $eventEnd = $end->format('Ymd');
-//
-//        $interval = $begin->diff($end);
-//
-//        $now = new \DateTime();
-//        $currentTime = $now->format('Ymd\THis');
-//        $summary = html_entity_decode($event['nav_title'] ?? $event['title'], ENT_COMPAT, 'UTF-8');
-//        /** @var Uri $uri */
-//
-//        $eventUrl = $this->request->getUri()->withQuery('')->__toString();
-//
-//        $description = !empty($event['subtitle']) ? $event['subtitle'] . "\\n\\n" : '';
-//
-//        $description .= $eventUrl;
-//        $description = html_entity_decode($description, ENT_COMPAT, 'UTF-8');
-//
-//        $eol = "\r\n";
-//        $icalContent =
-//            'BEGIN:VCALENDAR' . $eol .
-//            'VERSION:2.0' . $eol .
-//            'PRODID:-//Weinig Experience//experience.weinig.com//DE' . $eol .
-//            'CALSCALE:GREGORIAN' . $eol .
-//            'BEGIN:VEVENT' . $eol .
-//            'DTSTART;VALUE=DATE:' . $eventBegin . $eol;
-//
-//        if ($interval->d || $interval->m || $interval->y) {
-//            $icalContent .= 'DTEND;VALUE=DATE:' . $eventEnd . $eol;
-//        }
-//
-//        $icalContent .=
-//            'DTSTAMP:' . $currentTime . $eol .
-//            'SUMMARY:' . $summary . $eol .
-//            'URL;VALUE=URI:' . $eventUrl . $eol .
-//            'DESCRIPTION:' . $description . $eol .
-//            'UID:' . $currentTime . '-' . $eventBegin . '-' . $eventEnd . $eol .
-//            'END:VEVENT' . $eol .
-//            'END:VCALENDAR';
-//
-//        return $icalContent;
+        return $vCard;
     }
 }

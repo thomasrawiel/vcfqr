@@ -17,7 +17,8 @@
     "typo3/cms-fluid": "^12 || ^13",
     "friendsoftypo3/tt-address": "^8.0",
     "giggsey/libphonenumber-for-php": "^8.12",
-    "chillerlan/php-qrcode": "^5.0"
+    "chillerlan/php-qrcode": "^5.0",
+    "sabre/vobject": "^4.0"
   },
   "extra": {
     "typo3/cms": {
