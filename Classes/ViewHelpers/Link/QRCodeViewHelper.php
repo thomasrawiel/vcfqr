@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TRAW\Vcfqr\ViewHelpers\Link;
 
 use TRAW\Vcfqr\Service\QRCodeService;
@@ -49,21 +51,36 @@ class QRCodeViewHelper extends AbstractViewHelper
     public function render()
     {
         $arguments = $this->arguments;
-
         $parameter = $arguments['parameter'] ?? '';
-
-        $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
-        $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
-        $mergedTypoLinkConfiguration = self::mergeTypoLinkConfiguration($typoLinkConfiguration, $arguments);
-        $typoLinkParameter = $typoLinkCodec->encode($mergedTypoLinkConfiguration);
+        $uri = parse_url($parameter);
 
         $content = '';
-        if ($parameter) {
-            $content = self::invokeContentObjectRenderer($arguments, $typoLinkParameter);
-        }
+        //workaround to avoid mailto uri obfuscation by config.spamProtectEmailAddresses
+        if ($uri['scheme'] !== 'mailto') {
+            $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
+            $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
+            $mergedTypoLinkConfiguration = self::mergeTypoLinkConfiguration($typoLinkConfiguration, $arguments);
+            $typoLinkParameter = $typoLinkCodec->encode($mergedTypoLinkConfiguration);
 
-        $qrCode = $this->qrCodeService->getQRCode($content, $arguments['fileName'], $fileType = 'svg');
-        return $arguments['returnValue'] === 'url' ? $qrCode->getPublicUrl() : $qrCode->getContents();
+            if ($parameter) {
+                $content = self::invokeContentObjectRenderer($arguments, $typoLinkParameter);
+            }
+        } else {
+            $email = trim($uri['path']);
+            $queryParameters = [];
+            parse_str($uri['query'] ?? '', $queryParameters);
+            foreach (['subject', 'cc', 'bcc', 'body'] as $additionalInfo) {
+                if (isset($queryParameters[$additionalInfo])) {
+                    $queryParameters[$additionalInfo] = rawurldecode(trim($queryParameters[$additionalInfo]));
+                }
+            }
+            $content = $email . '?' . http_build_query($queryParameters, '', '&', PHP_QUERY_RFC3986);
+        }
+        if (!empty($content)) {
+            $qrCode = $this->qrCodeService->getQRCode($content, $arguments['fileName'], $fileType = 'svg');
+            return $arguments['returnValue'] === 'url' ? $qrCode->getPublicUrl() : $qrCode->getContents();
+        }
+        return '';
     }
 
     /**
