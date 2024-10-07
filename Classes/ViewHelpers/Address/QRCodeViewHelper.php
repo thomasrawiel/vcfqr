@@ -90,6 +90,6 @@ class QRCodeViewHelper extends AbstractViewHelper
 
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
-        return $additionalParams . ConfigurationUtility::getDownloadParameters($arguments['address'], $arguments['address_src']);
+        return $additionalParams . ConfigurationUtility::getVcfDownloadParameters($arguments['address'], $arguments['address_src']);
     }
 }

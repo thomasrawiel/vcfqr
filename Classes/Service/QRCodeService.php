@@ -6,8 +6,10 @@ use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\Output\QRMarkupSVG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use TRAW\Vcfqr\Event\QrCodeGeneratedEvent;
 use TRAW\Vcfqr\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Resource\DuplicationBehavior;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -27,7 +29,8 @@ class QRCodeService
      */
     public function __construct(
         private readonly StorageRepository    $storageRepository,
-        private readonly ConfigurationUtility $configurationUtility
+        private readonly ConfigurationUtility $configurationUtility,
+        private readonly EventDispatcher      $eventDispatcher
     )
     {
     }
@@ -79,16 +82,20 @@ class QRCodeService
 //            ],
         ];
 
+        $qrCOde = new QRCode(new QROptions($options));
 
-        $out = (new QRCode(new QROptions($options)))->render($data);
-        $tmpFile = '/tmp/' . $filename;
+        $event = new QrCodeGeneratedEvent($qrCOde, $filename, $data);
+        $this->eventDispatcher->dispatch($event);
+
+        $out = $event->getQrcode()->render($data);
+        $tmpFile = '/tmp/' . $event->getFilename();
 
         file_put_contents($tmpFile, $out);
 
         return $this->configurationUtility->getStorage()->addFile(
             $tmpFile,
             $this->configurationUtility->getFolder(),
-            $filename,
+            $event->getFilename(),
             DuplicationBehavior::REPLACE
         );
     }

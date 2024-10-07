@@ -6,7 +6,16 @@ call_user_func(function ($_EXTKEY = 'vcfqr', $table = 'tt_content') {
     if ($configuration['enableExamples']) {
         $LLL = 'LLL:EXT:' . $_EXTKEY . '/Resources/Private/Language/locallang_be.xlf:';
 
-        $cTypes = ['link'];
+        $cTypes = ['link', 'ical'];
+        $columnsOverrides = [
+            'ical' => [
+                'header' => [
+                    'config' => [
+                        'required' => true,
+                    ],
+                ],
+            ],
+        ];
 
         $columnsForExampleCTypes = [
             'tx_vcfqr_filename' => [
@@ -27,11 +36,49 @@ call_user_func(function ($_EXTKEY = 'vcfqr', $table = 'tt_content') {
                     'eval' => 'unique',
                     'max' => 50,
                     'default' => '',
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
+                ],
+            ],
+            'tx_vcfqr_startdate' => [
+                'label' => $LLL . 'tx_vcfqr_startdate',
+                'description' => $LLL . 'tx_vcfqr_startdate.description',
+                'config' => [
+                    'type' => 'datetime',
+                    'default' => 0,
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
+                    'required' => true,
+                ],
+            ],
+            'tx_vcfqr_enddate' => [
+                'label' => $LLL . 'tx_vcfqr_enddate',
+                'description' => $LLL . 'tx_vcfqr_startdate.description',
+                'config' => [
+                    'type' => 'datetime',
+                    'default' => 0,
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
+                ],
+            ],
+            'tx_vcfqr_fullday' => [
+                'label' => $LLL . 'tx_vcfqr_fullday',
+                'description' => $LLL . 'tx_vcfqr_fullday.description',
+                'config' => [
+                    'type' => 'check',
+                    'renderType' => 'checkboxToggle',
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
                 ],
             ],
         ];
 
-        $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_link'] = ['showitem' => 'header,--linebreak--,header_link,--linebreak--,tx_vcfqr_filename'];
+        $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_link'] = ['showitem' => 'header_link,--linebreak--,tx_vcfqr_filename'];
+        $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_ical'] = ['showitem' => 'tx_vcfqr_startdate,tx_vcfqr_enddate,tx_vcfqr_fullday'];
 
         if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('tt_address')) {
             $columnsForExampleCTypes['tx_vcfqr_address'] = [
@@ -41,12 +88,15 @@ call_user_func(function ($_EXTKEY = 'vcfqr', $table = 'tt_content') {
                     'type' => 'group',
                     'allowed' => 'tt_address',
                     'size' => 1,
+                    'behaviour' => [
+                        'allowLanguageSynchronization' => true,
+                    ],
                 ],
             ];
 
             $cTypes = array_merge($cTypes, ['vcf', 'vcf_qr']);
-            $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_vcf'] = ['showitem' => 'header,--linebreak--,tx_vcfqr_address,--linebreak--,tx_vcfqr_filename'];
-            $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_vcf_qr'] = ['showitem' => 'header,--linebreak--,tx_vcfqr_address,--linebreak--,tx_vcfqr_filename'];
+            $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_vcf'] = ['showitem' => 'tx_vcfqr_address,--linebreak--,tx_vcfqr_filename'];
+            $GLOBALS['TCA'][$table]['palettes'][$_EXTKEY . '_vcf_qr'] = ['showitem' => 'tx_vcfqr_address,--linebreak--,tx_vcfqr_filename'];
 
         }
 
@@ -68,6 +118,7 @@ call_user_func(function ($_EXTKEY = 'vcfqr', $table = 'tt_content') {
             $GLOBALS['TCA'][$table]['types'][$_EXTKEY . '_' . $type]['showitem'] = '
                 --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
                     --palette--;;general,
+                    header,
                     --palette--;;vcfqr_' . $type . ',
                 --div--;LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.appearance,
                     --palette--;;frames,
@@ -83,6 +134,9 @@ call_user_func(function ($_EXTKEY = 'vcfqr', $table = 'tt_content') {
                     rowDescription,
                 --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:extended,
             ';
+            if (isset($columnsOverrides[$type])) {
+                $GLOBALS['TCA'][$table]['types'][$_EXTKEY . '_' . $type]['columnsOverrides'] = $columnsOverrides[$type];
+            }
         }
     }
 });
