@@ -38,6 +38,8 @@ class VcfDownload implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        $this->configuration = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr');
+
         if (false === isset($request->getQueryParams()['tx_vcfqr_address']['uid'])
             || false === isset($request->getQueryParams()['tx_vcfqr_address']['src'])
             || false === MathUtility::canBeInterpretedAsInteger($request->getQueryParams()['tx_vcfqr_address']['uid'])
@@ -48,9 +50,7 @@ class VcfDownload implements MiddlewareInterface
         ) {
             return $handler->handle($request);
         }
-
-        $this->configuration = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr');
-
+        
         $vcf = $this->fetchVcard($request->getQueryParams()['tx_vcfqr_address']['uid']);
 
         if (is_null($vcf)) {

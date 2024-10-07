@@ -6,9 +6,11 @@ use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Sabre\VObject\Component\VCard;
+use TRAW\Vcfqr\Configuration\AddressTableConfiguration;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\PathUtility;
 
 /**
  * Class VCardService
@@ -37,11 +39,29 @@ class VCardService
     protected PhoneNumberUtil $phoneUtil;
 
     /**
-     *
+     * @var array|string[]
      */
+    protected array $tableConf = [];
+
     public function __construct()
     {
         $this->phoneUtil = PhoneNumberUtil::getInstance();
+
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['tableConfiguration'])) {
+            $this->tableConf = $configurationFile;
+        } else {
+            $configurationFile = GeneralUtility::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['tableConfiguration']);
+
+            if (file_exists($configurationFile)) {
+                $this->tableConf = require $configurationFile;
+            } else {
+                throw new \Exception('Configuration file not found');
+            }
+        }
+
+        if (empty($this->tableConf)) {
+            throw new \Exception('Table configuration empty');
+        }
     }
 
     // @see: https://datatracker.ietf.org/doc/html/rfc6350
@@ -62,37 +82,37 @@ class VCardService
         }
         /** @var \Sabre\VObject\Component\VCard $vcard */
         $vcard = new VCard([
-            'N' => [$add['last_name'], $add['first_name'], $add['middle_name'], $add['title'], $add['title_suffix']],
-            'FN' => (!empty($add['name']) ? $add['name'] : ($add['title'] . (!empty($add['title_suffix']) ? (' ' . $add['title_suffix']) : '') . ' ' . $add['first_name'] . ' ' . $add['middle_name'] . ' ' . $add['last_name'])),
+            'N' => [$add[$this->tableConf['lastname']], $add[$this->tableConf['firstname']], $add[$this->tableConf['middlename']], $add[$this->tableConf['title']], $add[$this->tableConf['title_suffix']]],
+            'FN' => (!empty($add[$this->tableConf['fullname']]) ? $add[$this->tableConf['fullname']] : ($add[$this->tableConf['title']] . (!empty($add[$this->tableConf['title_suffix']]) ? (' ' . $add[$this->tableConf['title_suffix']]) : '') . ' ' . $add[$this->tableConf['firstname']] . ' ' . $add[$this->tableConf['middlename']] . ' ' . $add[$this->tableConf['lastname']])),
         ]);
 
-        if (!empty($add['company'])) {
-            $vcard->add('ORG', $add['company']);
+        if (!empty($add[$this->tableConf['company']])) {
+            $vcard->add('ORG', $add[$this->tableConf['company']]);
         }
-        if (!empty($add['position'])) {
-            $vcard->add('TITLE', $add['position']);
+        if (!empty($add[$this->tableConf['position']])) {
+            $vcard->add('TITLE', $add[$this->tableConf['position']]);
         }
         //photo
         //@todo: add photo to vcard
-        if (!empty($add['phone'])) {
-            $vcard->add('TEL', $this->convertPhoneNumber($add['phone']), ['type' => 'voice']);
+        if (!empty($add[$this->tableConf['phone']])) {
+            $vcard->add('TEL', $this->convertPhoneNumber($add[$this->tableConf['phone']]), ['type' => 'voice']);
         }
-        if (!empty($add['mobile'])) {
-            $vcard->add('TEL', $this->convertPhoneNumber($add['mobile']), ['type' => 'cell']);
+        if (!empty($add[$this->tableConf['mobile']])) {
+            $vcard->add('TEL', $this->convertPhoneNumber($add[$this->tableConf['mobile']]), ['type' => 'cell']);
         }
-        if (!empty($add['fax'])) {
-            $vcard->add('TEL', $this->convertPhoneNumber($add['fax']), ['type' => 'fax']);
+        if (!empty($add[$this->tableConf['fax']])) {
+            $vcard->add('TEL', $this->convertPhoneNumber($add[$this->tableConf['fax']]), ['type' => 'fax']);
         }
-        if (!empty($add['address']) || !empty($add['city']) || !empty($add['zip']) || !empty($add['region']) || !empty($add['country'])) {
-            $vcard->add('ADR', ['', '', $add['address'], $add['city'], $add['region'], $add['zip'], $add['country']], ['type' => 'work']);
-        }
-
-        if (!empty($add['latitude']) && !empty($add['longitude'])) {
-            $vcard->add('GEO', 'geo:' . $add['latitude'] . ', ' . $add['longitude']);
+        if (!empty($add[$this->tableConf['address']]) || !empty($add[$this->tableConf['city']]) || !empty($add['zip']) || !empty($add[$this->tableConf['region']]) || !empty($add[$this->tableConf['country']])) {
+            $vcard->add('ADR', ['', '', $add[$this->tableConf['address']], $add[$this->tableConf['city']], $add[$this->tableConf['region']], $add[$this->tableConf['zip']], $add[$this->tableConf['country']]], ['type' => 'work']);
         }
 
-        if (!empty($add['email'])) {
-            $vcard->add('EMAIL', $add['email']);
+        if (!empty($add[$this->tableConf['geo_lat']]) && !empty($add[$this->tableConf['geo_long']])) {
+            $vcard->add('GEO', 'geo:' . $add[$this->tableConf['geo_lat']] . ', ' . $add[$this->tableConf['geo_long']]);
+        }
+
+        if (!empty($add[$this->tableConf['email']])) {
+            $vcard->add('EMAIL', $add[$this->tableConf['email']]);
         }
 
         if ($vcard->getDocumentType() !== $vCardType) {
@@ -104,8 +124,7 @@ class VCardService
         }
 
         return [
-
-            'filename' => $vcard->FN->__toString(),
+            'filename' => trim($vcard->FN->__toString()),
             'vcard' => $vcard->serialize(),
         ];
     }

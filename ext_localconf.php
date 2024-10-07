@@ -17,5 +17,6 @@ call_user_func(function ($_EXTKEY = 'vcfqr') {
             );
         }
     }
+    $GLOBALS['TYPO3_CONF_VARS']['EXT'][$_EXTKEY]['tableConfiguration'] = 'EXT:vcfqr/Configuration/AddressTableConfiguration.php';
 });
 
