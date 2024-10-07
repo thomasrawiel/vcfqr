@@ -47,10 +47,10 @@ class VCardService
     {
         $this->phoneUtil = PhoneNumberUtil::getInstance();
 
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['tableConfiguration'])) {
+        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['addressTableConfiguration'])) {
             $this->tableConf = $configurationFile;
         } else {
-            $configurationFile = GeneralUtility::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['tableConfiguration']);
+            $configurationFile = GeneralUtility::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['addressTableConfiguration']);
 
             if (file_exists($configurationFile)) {
                 $this->tableConf = require $configurationFile;

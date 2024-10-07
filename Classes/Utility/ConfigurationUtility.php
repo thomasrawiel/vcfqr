@@ -85,9 +85,20 @@ class ConfigurationUtility
      *
      * @return string
      */
-    public static function getDownloadParameters(int $addressUid, int $pageUid): string
+    public static function getVcfDownloadParameters(int $addressUid, int $pageUid): string
     {
         return sprintf('&tx_vcfqr_address[uid]=%d&tx_vcfqr_address[src]=%d', $addressUid, $pageUid);
+    }
+
+    /**
+     * @param int $record
+     * @param int $pageUid
+     *
+     * @return string
+     */
+    public static function getIcalDownloadParameters(int $recordUid, int $pageUid): string
+    {
+        return sprintf('&tx_vcfqr_ical[uid]=%d&tx_vcfqr_ical[src]=%d', $recordUid, $pageUid);
     }
 
     /**

@@ -15,3 +15,6 @@ vcardVersion=5
 
 #cat=advanced; type=string; label=Address table name
 addressTablename = tt_address
+
+#cat=advanced; type=string; label=Event table name
+eventTablename = tt_content

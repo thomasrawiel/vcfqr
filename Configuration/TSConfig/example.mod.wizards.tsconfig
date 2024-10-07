@@ -10,6 +10,15 @@ mod.wizards.newContentElement.wizardItems {
                     CType = vcfqr_link
                 }
             }
+
+            vcfqr_ical {
+                title = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_ical
+                description = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_ical.description
+                iconIdentifier = tx-vcfqr-qr-icon
+                tt_content_defValues {
+                    CType = vcfqr_ical
+                }
+            }
         }
 
         show = *

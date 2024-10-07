@@ -15,3 +15,9 @@ tt_content.vcfqr_vcf_qr {
     templateName = VcfQr
     templateRootPaths.0 = EXT:vcfqr/Resources/Private/Templates/
 }
+
+tt_content.vcfqr_ical =< lib.contentElement
+tt_content.vcfqr_ical {
+    templateName = Ical
+    templateRootPaths.0 = EXT:vcfqr/Resources/Private/Templates/
+}
