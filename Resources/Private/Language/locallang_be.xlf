@@ -27,6 +27,12 @@
             <trans-unit id="tt_address.hideqrcode" resname="tt_address.hideqrcode">
                 <source>Display QR Code</source>
             </trans-unit>
+            <trans-unit id="tx_vcfqr_address">
+                <source>Address record</source>
+            </trans-unit>
+            <trans-unit id="tx_vcfqr_address.description">
+                <source>The address record that should be downloaded as VCF file when the QR-Code is scanned</source>
+            </trans-unit>
             <trans-unit id="tx_vcfqr_filename" resname="tx_vcfqr_filename">
                 <source>QR code filename</source>
             </trans-unit>
