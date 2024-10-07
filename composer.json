@@ -4,6 +4,8 @@
   "type": "typo3-cms-extension",
   "keywords": [
     "TYPO3 CMS",
+    "TYPO3 12",
+    "TYPO3 13",
     "VCF",
     "QR-Code"
   ],

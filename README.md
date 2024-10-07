@@ -73,3 +73,11 @@ Place it for example inside the tt-address partials
 
 
 
+
+Tested in TYPO3 12.4.20 & TYPO3 13.4/ dev-main
+
+
+
+
+
+
