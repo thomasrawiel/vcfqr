@@ -16,10 +16,13 @@
 		}
 	},
 	"require": {
-		"typo3/cms-fluid": "^12 || ^13",
+		"typo3/cms-core": "^12 || ^13",
 		"giggsey/libphonenumber-for-php": "^8.12",
 		"chillerlan/php-qrcode": "^5.0",
 		"sabre/vobject": "^4.0"
+	},
+	"suggest": {
+		"friendsoftypo3/tt-address": "Displays a list of addresses from an address table on the page"
 	},
 	"extra": {
 		"typo3/cms": {
