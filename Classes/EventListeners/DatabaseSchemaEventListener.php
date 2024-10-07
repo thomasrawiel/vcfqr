@@ -11,16 +11,21 @@ use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
  *
  * Class DatabaseSchemaEventListener
  */
-class DatabaseSchemaEventListener
+final class DatabaseSchemaEventListener
 {
-    public function __invoke(AlterTableDefinitionStatementsEvent $event): void
+    public function performNecessarySchemaUpdate(AlterTableDefinitionStatementsEvent $event): void
     {
-        if (GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('vcfqr', 'enableExamples')) {
-            $tt_content = (string)file_get_contents(
-                ExtensionManagementUtility::extPath('vcfqr') .
-                'Resources/Private/Sql/tt_content_example.sql'
-            );
+        $ext = 'vcfqr';
+        $extPath = ExtensionManagementUtility::extPath($ext);
+
+        if ((bool)GeneralUtility::makeInstance(ExtensionConfiguration::class)->get($ext, 'enableExamples')) {
+            $tt_content = (string)file_get_contents($extPath . 'Resources/Private/Sql/tt_content_example.sql');
             $event->addSqlData($tt_content);
+        }
+
+        if (ExtensionManagementUtility::isLoaded('tt_address')) {
+            $tt_address = (string)file_get_contents($extPath . 'Resources/Private/Sql/tt_address.sql');
+            $event->addSqlData($tt_address);
         }
     }
 }

@@ -14,7 +14,6 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * Class VcfDownload
- * @package TRAW\Vcfqr\Middleware
  */
 class VcfDownload implements MiddlewareInterface
 {
@@ -26,6 +25,10 @@ class VcfDownload implements MiddlewareInterface
      * @var array
      */
     protected array $queryParams = [];
+    /**
+     * @var array
+     */
+    protected array $configuration = [];
 
     /**
      * @param ServerRequestInterface  $request
@@ -46,6 +49,7 @@ class VcfDownload implements MiddlewareInterface
             return $handler->handle($request);
         }
 
+        $this->configuration = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr');
 
         $vcf = $this->fetchVcard($request->getQueryParams()['tx_vcfqr_address']['uid']);
 
@@ -72,7 +76,7 @@ class VcfDownload implements MiddlewareInterface
     {
         $cp = GeneralUtility::makeInstance(ConnectionPool::class);
         $pageResult = $cp->getConnectionForTable('pages')->select(['uid'], 'pages', ['uid' => $pageUid, 'hidden' => 0, 'deleted' => 0], [], [], 1)->fetchOne();
-        $addressResult = $cp->getConnectionForTable('tt_address')->select(['uid'], 'tt_address', ['uid' => $addressUid, 'hidden' => 0, 'deleted' => 0], [], [], 1)->fetchOne();
+        $addressResult = $cp->getConnectionForTable($this->configuration['addressTablename'])->select(['uid'], $this->configuration['addressTablename'], ['uid' => $addressUid, 'hidden' => 0, 'deleted' => 0], [], [], 1)->fetchOne();
 
         return $pageResult === $pageUid && $addressResult === $addressUid;
     }
@@ -86,11 +90,11 @@ class VcfDownload implements MiddlewareInterface
      */
     protected function fetchVcard(int $addressUid): array
     {
-        $version = (GeneralUtility::makeInstance(ExtensionConfiguration::class))->get('vcfqr', 'vcardVersion');
-        $table = 'tt_address';
+        $version = $this->configuration['vcardVersion'];
+        $table = $this->configuration['addressTablename'];
 
         $vcfService = GeneralUtility::makeInstance(VcardService::class);
-        $vCard = $vcfService->generateVCardFromRecord($addressUid, $version, $table);
+        $vCard = $vcfService->generateVCardFromRecord($addressUid, $table, $version);
 
         return $vCard;
     }

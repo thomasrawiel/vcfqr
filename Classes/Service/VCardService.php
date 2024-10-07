@@ -54,15 +54,11 @@ class VCardService
      * @return string
      * @throws \Exception
      */
-    public function generateVCardFromRecord(int $recordUid, int $vCardType = VCard::VCARD30, string $table = 'tt_address'): array
+    public function generateVCardFromRecord(int $recordUid, string $table, int $vCardType = VCard::VCARD30): array
     {
-        if (!ExtensionManagementUtility::isLoaded('tt_address')) {
-            throw new \Exception('Couldn\'t generate vcard from tt_address because the extension is not installed.');
-        }
-
         $add = $this->getRecordData($recordUid, $table);
         if (empty($add)) {
-            throw new \Exception('Couldn\'t generate vcard from tt_address because the record does not exist.');
+            throw new \Exception('Couldn\'t generate vcard from ' . $table . ' because the record does not exist.');
         }
         /** @var \Sabre\VObject\Component\VCard $vcard */
         $vcard = new VCard([
@@ -100,9 +96,9 @@ class VCardService
         }
 
         if ($vcard->getDocumentType() !== $vCardType) {
-            if(in_array($vCardType, [VCard::VCARD21, VCard::VCARD30, VCard::VCARD40])){
+            if (in_array($vCardType, [VCard::VCARD21, VCard::VCARD30, VCard::VCARD40])) {
                 $vcard = $vcard->convert($vCardType);
-            }else {
+            } else {
                 $vcard = $vcard->convert(VCard::VCARD30);
             }
         }
@@ -141,7 +137,7 @@ class VCardService
      * @return false|mixed[]
      * @throws \Doctrine\DBAL\Exception
      */
-    protected function getRecordData($recordUid, $table = 'tt_address')
+    protected function getRecordData($recordUid, $table)
     {
         $qb = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($table);
         return $qb->select(['*'], $table, ['uid' => $recordUid, 'deleted' => 0, 'hidden' => 0], [], [], 1)->fetchAssociative();

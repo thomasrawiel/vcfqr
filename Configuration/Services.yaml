@@ -14,3 +14,5 @@ services:
     tags:
       - name: event.listener
         identifier: 'vcfqr-ttaddress'
+        event: AlterTableDefinitionStatementsEvent
+        method: performNecessarySchemaUpdate

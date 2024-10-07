@@ -1,4 +1,7 @@
 <?php
+
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3') or die('Access denied.');
 
 call_user_func(function ($_EXTKEY = 'vcfqr') {
@@ -6,8 +9,13 @@ call_user_func(function ($_EXTKEY = 'vcfqr') {
     if ($configuration['enableExamples']) {
         $GLOBALS['TYPO3_CONF_VARS']['SYS']['fluid']['namespaces']['vcf'] = ['TRAW\Vcfqr\ViewHelpers'];
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
-            "@import 'EXT:vcfqr/Configuration/TSConfig/example.mod.wizards.tsconfig"
+            "@import 'EXT:vcfqr/Configuration/TSConfig/example.mod.wizards.tsconfig'"
         );
+        if(EXtensionManagementUtility::isLoaded('tt_address')) {
+            \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
+                "@import 'EXT:vcfqr/Configuration/TSConfig/ttaddress.mod.wizards.tsconfig'"
+            );
+        }
     }
 });
 

@@ -11,7 +11,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class ConfigurationUtility
- * @package TRAW\Vcfqr\Utility
  */
 class ConfigurationUtility
 {
@@ -75,7 +74,8 @@ class ConfigurationUtility
     /**
      * @return int
      */
-    public function getQRCodeCacheLifetime(): int {
+    public function getQRCodeCacheLifetime(): int
+    {
         return $this->configuration['qrcodeCacheLifetime'] ?? 0;
     }
 
@@ -85,7 +85,16 @@ class ConfigurationUtility
      *
      * @return string
      */
-    public static function getDownloadParameters(int $addressUid, int $pageUid):string {
+    public static function getDownloadParameters(int $addressUid, int $pageUid): string
+    {
         return sprintf('&tx_vcfqr_address[uid]=%d&tx_vcfqr_address[src]=%d', $addressUid, $pageUid);
+    }
+
+    /**
+     * @return string
+     */
+    public function getAddressTablename(): string
+    {
+        return $this->configuration['addressTablename'] ?? '';
     }
 }

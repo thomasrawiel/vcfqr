@@ -12,3 +12,6 @@ qrcodeCacheLifetime = 86400
 
 #cat=basic; type=options[vCard 2.1=4,vCard 3.0 (default)=5,vCard 4.0=6]; label=vCard Version to generate
 vcardVersion=5
+
+#cat=advanced; type=string; label=Address table name
+addressTablename = tt_address

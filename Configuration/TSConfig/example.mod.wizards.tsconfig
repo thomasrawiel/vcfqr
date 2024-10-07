@@ -2,24 +2,6 @@ mod.wizards.newContentElement.wizardItems {
     vcfqr {
         header = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CTypeGroup
         elements {
-            vcfqr_vcf {
-                title = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_vcf
-                description = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_vcf.description
-                iconIdentifier = tx-vcfqr-qr-icon
-                tt_content_defValues {
-                    CType = vcfqr_vcf
-                }
-            }
-
-            vcfqr_vcf_qr {
-                title = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_vcf_qr
-                description = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_vcf_qr.description
-                iconIdentifier = tx-vcfqr-qr-icon
-                tt_content_defValues {
-                    CType = vcfqr_vcf_qr
-                }
-            }
-
             vcfqr_link {
                 title = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_link
                 description = LLL:EXT:vcfqr/Resources/Private/Language/locallang_be.xlf:CType_link.description
@@ -30,6 +12,6 @@ mod.wizards.newContentElement.wizardItems {
             }
         }
 
-        show := addToList(vcfqr_vcf,vcfqr_vcf_qr,vcfqr_link)
+        show = *
     }
 }
