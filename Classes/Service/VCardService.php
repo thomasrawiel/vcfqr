@@ -7,7 +7,9 @@ use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
 use Sabre\VObject\Component\VCard;
 use TRAW\Vcfqr\Configuration\AddressTableConfiguration;
+use TRAW\Vcfqr\Event\VCardGeneratedEvent;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\PathUtility;
@@ -43,7 +45,7 @@ class VCardService
      */
     protected array $tableConf = [];
 
-    public function __construct()
+    public function __construct(private readonly EventDispatcher $eventDispatcher)
     {
         $this->phoneUtil = PhoneNumberUtil::getInstance();
 
@@ -123,9 +125,14 @@ class VCardService
             }
         }
 
+        $filename = trim($vcard->FN->__toString());
+
+        $event = new VCardGeneratedEvent($vcard, $filename, $add);
+        $this->eventDispatcher->dispatch($event);
+
         return [
-            'filename' => trim($vcard->FN->__toString()),
-            'vcard' => $vcard->serialize(),
+            'filename' => $event->getFilename(),
+            'vcard' => $event->getVcard()->serialize(),
         ];
     }
 

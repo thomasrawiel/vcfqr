@@ -5,13 +5,14 @@ namespace TRAW\Vcfqr\Service;
 use Sabre\VObject\Component\VCalendar;
 use Sabre\VObject\Splitter\ICalendar;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class IcalService
 {
     protected array $tableConf = [];
 
-    public function __construct()
+    public function __construct(private readonly EventDispatcher $eventDispatcher)
     {
         if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['eventTableConfiguration'])) {
             $this->tableConf = $configurationFile;
@@ -35,28 +36,45 @@ class IcalService
 
     public function generateIcalFromData($data, ?string $startDateField = null, ?string $endDateField = null, ?string $fullDayField = null): array
     {
-
         if (empty($startDateField)) {
             $startDateField = $this->tableConf['startDate'];
         }
         if (empty($endDateField)) {
             $endDateField = $this->tableConf['endDate'];
         }
+        if (empty($fullDayField)) {
+            $fullDayField = $this->tableConf['fullDay'] ?? null;
+        }
 
         $startDate = (new \DateTime())->setTimestamp($data[$startDateField]);
-        $endDate = (new \DateTime())->setTimestamp($data[$endDateField]);
+        $endDate = (new \DateTime())->setTimestamp($data[$endDateField] > 0 ? $data[$endDateField] : ($data[$startDateField]));
+
+        $fullDay = !isset($data[$endDateField]) || $data[$endDateField] === 0 || (isset($data[$fullDayField]) && $data[$fullDayField]);
+
+        if ($fullDay) {
+            //if there's no end date or "fullDay" is true, we assume you mean "full day", so format as date and add +1day to enddate
+            $endDate->setTimestamp($endDate->getTimestamp() + 86400);
+            $startDateString = $startDate->format("Ymd");
+            $endDateString = $endDate->format("Ymd");
+        }
 
         $ical = new Vcalendar([
             'VEVENT' => [
                 'SUMMARY' => $data[$this->tableConf['summary']],
-                'DTSTART' => $startDate,
-                'DTEND' => $endDate,
+                'DTSTART' => $startDateString ?? $startDate,
+                'DTEND' => $endDateString ?? $endDate,
             ],
         ]);
+        $filename = mb_convert_encoding(trim($ical->VEVENT->SUMMARY->__toString()), 'UTF-8', mb_list_encodings());
+
+        $event = new \IcalGeneratedEvent($ical, $filename, $data);
+
+        //add your own data to ical
+        $this->eventDispatcher->dispatch($event);
 
         return [
-            'filename' => mb_convert_encoding(trim($ical->VEVENT->SUMMARY->__toString()), 'UTF-8', mb_list_encodings()),
-            'ical' => $ical->serialize(),
+            'filename' => $event->getFilename(),
+            'ical' => $event->getIcal()->serialize(),
         ];
     }
 
