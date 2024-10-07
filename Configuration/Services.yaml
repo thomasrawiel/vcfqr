@@ -9,3 +9,8 @@ services:
 
   TRAW\Vcfqr\Utility\ConfigurationUtility:
     public: true
+
+  TRAW\Vcfqr\EventListeners\DatabaseSchemaEventListener:
+    tags:
+      - name: event.listener
+        identifier: 'vcfqr-ttaddress'
