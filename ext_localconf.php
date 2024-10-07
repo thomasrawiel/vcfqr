@@ -1,7 +1,5 @@
 <?php
 
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
-
 defined('TYPO3') or die('Access denied.');
 
 call_user_func(function ($_EXTKEY = 'vcfqr') {
@@ -11,12 +9,13 @@ call_user_func(function ($_EXTKEY = 'vcfqr') {
         \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
             "@import 'EXT:vcfqr/Configuration/TSConfig/example.mod.wizards.tsconfig'"
         );
-        if(EXtensionManagementUtility::isLoaded('tt_address')) {
+        if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('tt_address')) {
             \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
                 "@import 'EXT:vcfqr/Configuration/TSConfig/ttaddress.mod.wizards.tsconfig'"
             );
         }
     }
-    $GLOBALS['TYPO3_CONF_VARS']['EXT'][$_EXTKEY]['tableConfiguration'] = 'EXT:vcfqr/Configuration/AddressTableConfiguration.php';
+    $GLOBALS['TYPO3_CONF_VARS']['EXT'][$_EXTKEY]['addressTableConfiguration'] = 'EXT:vcfqr/Configuration/AddressTableConfiguration.php';
+    $GLOBALS['TYPO3_CONF_VARS']['EXT'][$_EXTKEY]['eventTableConfiguration'] = 'EXT:vcfqr/Configuration/EventTableConfiguration.php';
 });
 

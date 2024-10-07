@@ -1,0 +1,17 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:vcf="http://typo3.org/ns/TRAW/Vcfqr/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<f:layout name="Default"/>
+<f:section name="Main">
+   <f:format.raw>
+       <vcf:ical.ical record="{data.uid}"
+                      startField="tx_vcfqr_startdate"
+                      endField="tx_vcfqr_enddate"
+                      class="vcf-download"
+                      additionalAttributes="{aria-role:'button'}"
+                      title="Download vCard"
+                      textWrap="<span>|</span>"
+       >Download iCal</vcf:ical.ical>
+   </f:format.raw>
+</f:section>
+</html>

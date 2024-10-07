@@ -1,6 +1,5 @@
 <?php
-
-namespace TRAW\Vcfqr\ViewHelpers\Address;
+namespace TRAW\Vcfqr\ViewHelpers\Ical;
 
 use TRAW\Vcfqr\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
@@ -8,41 +7,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
-use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
-/**
- * Class VcfViewHelper
- *
- * creates the download link for the vcf file of the specified address record
- *
- * @package TRAW\Vcfqr\ViewHelpers\Address
- */
-class VcfViewHelper extends AbstractViewHelper
-{
-    use CompileWithRenderStatic;
+class IcalViewHelper extends AbstractViewHelper {
+   public function initializeArguments() {
+       $this->registerArgument('record', 'int', 'record uid', true);
+       $this->registerArgument('startField', 'string', 'The fieldname that holds the begin date', false);
+       $this->registerArgument('endField', 'string', 'The fieldname that holds the end date', false);
+       $this->registerArgument('fullDayField', 'string', 'The fieldname that holds the boolean if it\'s a full day event', false);
+       $this->registerArgument('target', 'string', 'Define where to display the linked URL', false, '_blank');
+       $this->registerArgument('class', 'string', 'Define classes for the link element', false, '');
+       $this->registerArgument('title', 'string', 'Define the title for the link element', false, '');
+       $this->registerArgument('additionalAttributes', 'array', 'Additional tag attributes to be added directly to the resulting HTML tag', false, []);
+       $this->registerArgument('textWrap', 'string', 'Wrap the link using the typoscript "wrap" data type', false, '');
+   }
 
-    /**
-     * @var bool
-     */
-    protected $escapeOutput = false;
-
-    /**
-     * @return void
-     */
-    public function initializeArguments(): void
-    {
-        $this->registerArgument('address', 'int', 'address uid', true);
-        $this->registerArgument('target', 'string', 'Define where to display the linked URL', false, '_blank');
-        $this->registerArgument('class', 'string', 'Define classes for the link element', false, '');
-        $this->registerArgument('title', 'string', 'Define the title for the link element', false, '');
-        $this->registerArgument('additionalAttributes', 'array', 'Additional tag attributes to be added directly to the resulting HTML tag', false, []);
-        $this->registerArgument('textWrap', 'string', 'Wrap the link using the typoscript "wrap" data type', false, '');
-    }
-
-    /**
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
-     */
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
         //link to current site
@@ -51,7 +29,7 @@ class VcfViewHelper extends AbstractViewHelper
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
 
-        $arguments['address_src'] = $parameter;
+        $arguments['record_src'] = $parameter;
         // Merge the $parameter with other arguments
         $mergedTypoLinkConfiguration = self::mergeTypoLinkConfiguration($typoLinkConfiguration, $arguments);
         $typoLinkParameter = $typoLinkCodec->encode($mergedTypoLinkConfiguration);
@@ -151,6 +129,6 @@ class VcfViewHelper extends AbstractViewHelper
      */
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
-        return $additionalParams . ConfigurationUtility::getVcfDownloadParameters($arguments['address'], $arguments['address_src']);
+        return $additionalParams . ConfigurationUtility::getIcalDownloadParameters($arguments['record'], $arguments['record_src']);
     }
 }

@@ -24,6 +24,9 @@
             <trans-unit id="CType_vcf_qr.description" resname="CType_vcf_qr.description">
                 <source>Creates a QR code that downloads the vcf file</source>
             </trans-unit>
+			<trans-unit id="CType_ical" resname="CType_ical">
+				<source>Ical</source>
+			</trans-unit>
             <trans-unit id="tt_address.hideqrcode" resname="tt_address.hideqrcode">
                 <source>Display QR Code</source>
             </trans-unit>
@@ -39,6 +42,24 @@
             <trans-unit id="tx_vcfqr_filename.description" resname="tx_vcfqr_filename.description">
                 <source>The prefixed path can be changed in the extension settings</source>
             </trans-unit>
+			<trans-unit id="tx_vcfqr_startdate" resname="tx_vcfqr_startdate">
+				<source>Begin date</source>
+			</trans-unit>
+			<trans-unit id="tx_vcfqr_startdate.description" resname="tx_vcfqr_startdate.description">
+				<source></source>
+			</trans-unit>
+			<trans-unit id="tx_vcfqr_enddate" resname="tx_vcfqr_enddate">
+				<source>End date</source>
+			</trans-unit>
+			<trans-unit id="tx_vcfqr_startdate.description" resname="tx_vcfqr_startdate.description">
+				<source></source>
+			</trans-unit>
+			<trans-unit id="tx_vcfqr_fullday" resname="tx_vcfqr_fullday">
+				<source>Full day</source>
+			</trans-unit>
+			<trans-unit id="tx_vcfqr_fullday.description" resname="tx_vcfqr_fullday.description">
+				<source></source>
+			</trans-unit>
         </body>
     </file>
 </xliff>
