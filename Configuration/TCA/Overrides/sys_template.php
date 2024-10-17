@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 defined('TYPO3') || die('Access denied.');
 call_user_func(function ($_EXTKEY = "vcfqr") {
     $configuration = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get($_EXTKEY);

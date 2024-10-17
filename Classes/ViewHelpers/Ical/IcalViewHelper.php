@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace TRAW\Vcfqr\ViewHelpers\Ical;
 
 use TRAW\Vcfqr\Utility\ConfigurationUtility;
