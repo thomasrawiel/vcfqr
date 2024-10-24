@@ -56,7 +56,7 @@ class QRCodeViewHelper extends AbstractViewHelper
 
         $content = '';
         //workaround to avoid mailto uri obfuscation by config.spamProtectEmailAddresses
-        if ($uri['scheme'] !== 'mailto') {
+        if ($uri['scheme'] ?? '' !== 'mailto') {
             $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
             $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
             $mergedTypoLinkConfiguration = self::mergeTypoLinkConfiguration($typoLinkConfiguration, $arguments);
@@ -66,7 +66,7 @@ class QRCodeViewHelper extends AbstractViewHelper
                 $content = self::invokeContentObjectRenderer($arguments, $typoLinkParameter);
             }
         } else {
-            $email = trim($uri['path']);
+            $email = trim($uri['path'] ?? '');
             $queryParameters = [];
             parse_str($uri['query'] ?? '', $queryParameters);
             foreach (['subject', 'cc', 'bcc', 'body'] as $additionalInfo) {

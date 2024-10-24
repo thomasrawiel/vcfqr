@@ -77,7 +77,7 @@ class ConfigurationUtility
      */
     public function getQRCodeCacheLifetime(): int
     {
-        return $this->configuration['qrcodeCacheLifetime'] ?? 0;
+        return (int)($this->configuration['qrcodeCacheLifetime'] ?? 0);
     }
 
     /**

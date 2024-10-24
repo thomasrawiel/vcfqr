@@ -63,7 +63,7 @@ class IcalViewHelper extends AbstractViewHelper {
 
         if ((string)($arguments['textWrap'] ?? '') !== '') {
             $instructions['ATagBeforeWrap'] = true;
-            $instructions['wrap'] = $arguments['textWrap'];
+            $instructions['wrap'] = $arguments['textWrap'] ?? '';
         }
 
         $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
