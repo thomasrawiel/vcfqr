@@ -31,6 +31,13 @@ class VcfDownload implements MiddlewareInterface
      */
     protected array $configuration = [];
 
+    protected ?VCardService $vcardService = null;
+
+    public function injectVCardService(VCardService $vcardService)
+    {
+        $this->vcardService = $vcardService;
+    }
+
     /**
      * @param ServerRequestInterface  $request
      * @param RequestHandlerInterface $handler
@@ -45,14 +52,14 @@ class VcfDownload implements MiddlewareInterface
             || false === isset($request->getQueryParams()['tx_vcfqr_address']['src'])
             || false === MathUtility::canBeInterpretedAsInteger($request->getQueryParams()['tx_vcfqr_address']['uid'])
             || false === MathUtility::canBeInterpretedAsInteger($request->getQueryParams()['tx_vcfqr_address']['src'])
-            || false === $this->validateUidsExist($request->getQueryParams()['tx_vcfqr_address']['uid'], $request->getQueryParams()['tx_vcfqr_address']['src'])
+            || false === $this->validateUidsExist((int)$request->getQueryParams()['tx_vcfqr_address']['uid'], (int)$request->getQueryParams()['tx_vcfqr_address']['src'])
             || (int)$request->getQueryParams()['tx_vcfqr_address']['src'] !== (int)($request->getAttribute('routing')->getPageId())
 
         ) {
             return $handler->handle($request);
         }
         
-        $vcf = $this->fetchVcard($request->getQueryParams()['tx_vcfqr_address']['uid']);
+        $vcf = $this->fetchVcard((int)$request->getQueryParams()['tx_vcfqr_address']['uid']);
 
         if (is_null($vcf)) {
             return $handler->handle($request);
@@ -91,11 +98,10 @@ class VcfDownload implements MiddlewareInterface
      */
     protected function fetchVcard(int $addressUid): array
     {
-        $version = $this->configuration['vcardVersion'];
+        $version = (int)$this->configuration['vcardVersion'];
         $table = $this->configuration['addressTablename'];
 
-        $vcfService = GeneralUtility::makeInstance(VcardService::class);
-        $vCard = $vcfService->generateVCardFromRecord($addressUid, $table, $version);
+        $vCard = $this->vcardService->generateVCardFromRecord($addressUid, $table, $version);
 
         return $vCard;
     }

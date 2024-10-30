@@ -32,6 +32,13 @@ class IcalDownload implements MiddlewareInterface
      */
     protected array $configuration = [];
 
+    protected ?IcalService $icalService = null;
+
+    public function injectIcalService(IcalService $icalService)
+    {
+        $this->icalService = $icalService;
+    }
+
     /**
      * @param ServerRequestInterface  $request
      * @param RequestHandlerInterface $handler
@@ -92,11 +99,9 @@ class IcalDownload implements MiddlewareInterface
      */
     protected function fetchIcal(int $recordUid): array
     {
-        $version = $this->configuration['vcardVersion'];
         $table = $this->configuration['eventTablename'];
 
-        $icalService = GeneralUtility::makeInstance(IcalService::class);
-        $ical = $icalService->generateIcalFromRecord($recordUid, $table);
+        $ical = $this->icalService->generateIcalFromRecord($recordUid, $table);
 
         return $ical;
     }
