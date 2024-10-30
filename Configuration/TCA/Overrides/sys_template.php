@@ -10,4 +10,11 @@ call_user_func(function ($_EXTKEY = "vcfqr") {
             'Vcf-QR-Code Example Content Elements'
         );
     }
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('tt_address')) {
+        \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile(
+            $_EXTKEY,
+            'Configuration/Typoscript/TtAddress/',
+            'Vcf-QR-Code TtAddress partial'
+        );
+    }
 });

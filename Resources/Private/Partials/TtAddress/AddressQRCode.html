@@ -1,0 +1,13 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:vcf="http://typo3.org/ns/TRAW/Vcfqr/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+<f:section name="InlineSvg">
+    <div style="width:300px;height:300px;">
+        <f:format.raw><vcf:address.qRCode address="{address.uid}" fileName="{address.slug}" returnValue="content"/></f:format.raw>
+    </div>
+</f:section>
+<f:section name="Image">
+    <f:image src="{vcf:address.qRCode(address: address.uid, fileName: address.slug, returnValue: 'url')}" width="300"
+             height="300"/>
+</f:section>
+</html>
