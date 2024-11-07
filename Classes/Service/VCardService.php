@@ -49,11 +49,11 @@ class VCardService
     public function __construct(private readonly EventDispatcher $eventDispatcher)
     {
         $this->phoneUtil = PhoneNumberUtil::getInstance();
-
-        if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['addressTableConfiguration'])) {
-            $this->tableConf = $configurationFile;
+        $addressTableConfiguration = $GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['addressTableConfiguration'];
+        if (is_array($addressTableConfiguration)) {
+            $this->tableConf = $addressTableConfiguration;
         } else {
-            $configurationFile = GeneralUtility::getFileAbsFileName($GLOBALS['TYPO3_CONF_VARS']['EXT']['vcfqr']['addressTableConfiguration']);
+            $configurationFile = GeneralUtility::getFileAbsFileName($addressTableConfiguration);
 
             if (file_exists($configurationFile)) {
                 $this->tableConf = require $configurationFile;
