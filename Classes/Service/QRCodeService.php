@@ -77,7 +77,7 @@ class QRCodeService
             'version' => Version::AUTO,
             'outputBase64' => false,
             'connectPaths' => true,
-            'addQuietZone' => false,
+            'addQuietzone' => false,
         ];
 
         $beforeGeneratedEvent = $this->eventDispatcher->dispatch(new BeforeQrCodeGeneratedEvent($options));
