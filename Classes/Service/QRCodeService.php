@@ -7,6 +7,7 @@ use chillerlan\QRCode\Common\Version;
 use chillerlan\QRCode\Output\QRMarkupSVG;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
+use TRAW\Vcfqr\Event\BeforeQrCodeGeneratedEvent;
 use TRAW\Vcfqr\Event\QrCodeGeneratedEvent;
 use TRAW\Vcfqr\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\Core\Environment;
@@ -76,17 +77,14 @@ class QRCodeService
             'version' => Version::AUTO,
             'outputBase64' => false,
             'connectPaths' => true,
-//            'keepAsSquare' => [
-//                QRMatrix::M_FINDER_DARK,
-//                QRMatrix::M_FINDER_DOT,
-//                QRMatrix::M_ALIGNMENT_DARK,
-//            ],
+            'addQuietZone' => false,
         ];
 
-        $qrCOde = new QRCode(new QROptions($options));
+        $beforeGeneratedEvent = $this->eventDispatcher->dispatch(new BeforeQrCodeGeneratedEvent($options));
 
-        $event = new QrCodeGeneratedEvent($qrCOde, $filename, $data);
-        $this->eventDispatcher->dispatch($event);
+        $qrCOde = new QRCode(new QROptions($beforeGeneratedEvent->getOptions()));
+
+        $event = $this->eventDispatcher->dispatch(new QrCodeGeneratedEvent($qrCOde, $filename, $data));
 
         $out = $event->getQrcode()->render($data);
         $tmpFile = '/tmp/' . $event->getFilename();
