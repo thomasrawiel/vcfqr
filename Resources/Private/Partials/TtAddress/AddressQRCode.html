@@ -10,4 +10,7 @@
     <f:image src="{vcf:address.qRCode(address: address.uid, fileName: address.slug, returnValue: 'url')}" width="300"
              height="300"/>
 </f:section>
+<f:section name="DownloadLink">
+    <vcf:address.vcf address="{address.uid}">{linkText}</vcf:address.vcf>
+</f:section>
 </html>
