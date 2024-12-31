@@ -8,6 +8,7 @@ use Sabre\VObject\Splitter\ICalendar;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\EventDispatcher\EventDispatcher;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TRAW\Vcfqr\Event\IcalGeneratedEvent;
 
 class IcalService
 {
@@ -68,7 +69,7 @@ class IcalService
         ]);
         $filename = mb_convert_encoding(trim($ical->VEVENT->SUMMARY->__toString()), 'UTF-8', mb_list_encodings());
 
-        $event = new \IcalGeneratedEvent($ical, $filename, $data);
+        $event = new IcalGeneratedEvent($ical, $filename, $data);
 
         //add your own data to ical
         $this->eventDispatcher->dispatch($event);

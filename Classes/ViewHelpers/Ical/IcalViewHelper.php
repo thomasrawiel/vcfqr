@@ -26,7 +26,7 @@ class IcalViewHelper extends AbstractViewHelper {
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
         //link to current site
-        $parameter = $renderingContext->getRequest()->getAttribute('routing')->getPageId();
+        $parameter = (string)$renderingContext->getRequest()->getAttribute('routing')->getPageId();
 
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
@@ -131,6 +131,6 @@ class IcalViewHelper extends AbstractViewHelper {
      */
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
-        return $additionalParams . ConfigurationUtility::getIcalDownloadParameters($arguments['record'], $arguments['record_src']);
+        return $additionalParams . ConfigurationUtility::getIcalDownloadParameters((int)$arguments['record'], (int)$arguments['record_src']);
     }
 }

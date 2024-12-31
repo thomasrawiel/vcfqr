@@ -53,14 +53,14 @@ class IcalDownload implements MiddlewareInterface
             || false === isset($request->getQueryParams()['tx_vcfqr_ical']['src'])
             || false === MathUtility::canBeInterpretedAsInteger($request->getQueryParams()['tx_vcfqr_ical']['uid'])
             || false === MathUtility::canBeInterpretedAsInteger($request->getQueryParams()['tx_vcfqr_ical']['src'])
-            || false === $this->validateUidsExist($request->getQueryParams()['tx_vcfqr_ical']['uid'], $request->getQueryParams()['tx_vcfqr_ical']['src'])
+            || false === $this->validateUidsExist((int)$request->getQueryParams()['tx_vcfqr_ical']['uid'], (int)$request->getQueryParams()['tx_vcfqr_ical']['src'])
             || (int)$request->getQueryParams()['tx_vcfqr_ical']['src'] !== (int)($request->getAttribute('routing')->getPageId())
 
         ) {
             return $handler->handle($request);
         }
 
-        $ical = $this->fetchIcal($request->getQueryParams()['tx_vcfqr_ical']['uid']);
+        $ical = $this->fetchIcal((int)$request->getQueryParams()['tx_vcfqr_ical']['uid']);
 
         if (is_null($ical)) {
             return $handler->handle($request);

@@ -47,7 +47,7 @@ class VcfViewHelper extends AbstractViewHelper
     public static function renderStatic(array $arguments, \Closure $renderChildrenClosure, RenderingContextInterface $renderingContext): string
     {
         //link to current site
-        $parameter = $renderingContext->getRequest()->getAttribute('routing')->getPageId();
+        $parameter = (string)$renderingContext->getRequest()->getAttribute('routing')->getPageId();
 
         $typoLinkCodec = GeneralUtility::makeInstance(TypoLinkCodecService::class);
         $typoLinkConfiguration = $typoLinkCodec->decode($parameter);
@@ -152,6 +152,6 @@ class VcfViewHelper extends AbstractViewHelper
      */
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
-        return $additionalParams . ConfigurationUtility::getVcfDownloadParameters($arguments['address'], $arguments['address_src']);
+        return $additionalParams . ConfigurationUtility::getVcfDownloadParameters((int)$arguments['address'], (int)$arguments['address_src']);
     }
 }

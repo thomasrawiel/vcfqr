@@ -8,7 +8,6 @@ use TRAW\Vcfqr\Utility\ConfigurationUtility;
 use TYPO3\CMS\Core\LinkHandling\TypoLinkCodecService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
 
 /**
@@ -38,7 +37,7 @@ class QRCodeViewHelper extends AbstractViewHelper
     public function render()
     {
 
-        $parameter = $this->renderingContext->getRequest()->getAttribute('routing')->getPageId();
+        $parameter = (string)$this->renderingContext->getRequest()->getAttribute('routing')->getPageId();
         $arguments = $this->arguments;
         $arguments['address_src'] = $parameter;
 
@@ -52,7 +51,7 @@ class QRCodeViewHelper extends AbstractViewHelper
             $content = self::invokeContentObjectRenderer($arguments, $typoLinkParameter);
         }
 
-        $qrCode = $this->qrCodeService->getQRCode($content, !empty($arguments['fileName'])?$arguments['fileName']:($arguments['address_src'] . '_' . $arguments['address_src']), $fileType = 'svg');
+        $qrCode = $this->qrCodeService->getQRCode($content, !empty($arguments['fileName']) ? $arguments['fileName'] : ($arguments['address_src'] . '_' . $arguments['address_src']), $fileType = 'svg');
 
         return $arguments['returnValue'] === 'url' ? $qrCode->getPublicUrl() : $qrCode->getContents();
     }
@@ -91,6 +90,6 @@ class QRCodeViewHelper extends AbstractViewHelper
 
     protected static function mergeWithMiddlewareParams($additionalParams, $arguments): string
     {
-        return $additionalParams . ConfigurationUtility::getVcfDownloadParameters($arguments['address'], $arguments['address_src']);
+        return $additionalParams . ConfigurationUtility::getVcfDownloadParameters((int)$arguments['address'], (int)$arguments['address_src']);
     }
 }
