@@ -18,4 +18,16 @@ $EM_CONF[$_EXTKEY] = [
             'tt_address' => '8.0.0-9.99.99',
         ],
     ],
+    'autoload' => [
+        'psr-4' => [
+            'TRAW\\Vcfqr\\' => 'Classes/',
+            'chillerlan\\Settings\\' => 'vendor/chillerlan/php-settings-container/src',
+            'chillerlan\\QRCode' => 'vendor/chillerlan/php-qrcode/src',
+            'libphonenumber\\' => 'vendor/giggsley/libphonenumber-for-php/src/',
+            'Giggsey\\Locale\\' => 'vendor/giggsley/locale/src/',
+            'Sabre\\Uri\\' => 'vendor/sabre/uri/lib/',
+            'Sabre\\VObject\\' => 'vendor/sabre/vobject/lib/',
+            'Sabre\\Xml\\' => 'vendor/sabre/xml/lib/',
+        ],
+    ],
 ];
