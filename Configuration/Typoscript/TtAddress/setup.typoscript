@@ -1,1 +1,1 @@
-plugin.tt_address.view.partialRootPaths.25 = EXT:vcfqr/Resources/Private/Partials/TtAddress/
+plugin.tx_ttaddress.view.partialRootPaths.25 = EXT:vcfqr/Resources/Private/Partials/TtAddress/
